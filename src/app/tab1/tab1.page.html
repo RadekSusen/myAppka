@@ -1,18 +1,69 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-searchbar placeholder="Search cities"></ion-searchbar>
+    <ion-searchbar placeholder="Search cities" [(ngModel)]="searchQuery" (ionInput)="searchBreweries()"></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-searchbar placeholder="Search cities"></ion-searchbar>
+      <ion-searchbar placeholder="Search cities" [(ngModel)]="searchQuery"
+        (ionInput)="searchBreweries()"></ion-searchbar>
     </ion-toolbar>
   </ion-header>
 
-  <p>placeholder = výpis států pro rozklikání
+  <ion-list *ngIf="breweries.length > 0">
+    <ion-item *ngFor="let brewery of breweries">
+      <ion-label>
+        <!--styl výpisu v search baru-->
+        <h2>{{ brewery.name }}</h2>
+        <p>{{ brewery.brewery_type }} - {{ brewery.city }}, {{ brewery.state }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
 
-    usa -> counties -> cities -> brewries
-  </p>
+  <ion-text *ngIf="breweries.length === 0 && searchQuery">
+    <p>No breweries found in this city. Try another one!</p>
+  </ion-text>
+
+  <!-- Country List -->
+  <ion-list *ngIf="view === 'countries'">
+    <ion-item *ngFor="let country of countries">
+      <ion-button expand="block" (click)="fetchStates(country)">{{ country }}</ion-button>
+    </ion-item>
+  </ion-list>
+
+  <!-- State/Province List -->
+  <ion-list *ngIf="view === 'states'">
+    <ion-item *ngFor="let state of states">
+      <ion-button expand="block">{{ state }}</ion-button>
+    </ion-item>
+    <ion-item>
+      <ion-button color="medium" expand="block" (click)="backToCountries()">Back to Countries</ion-button>
+    </ion-item>
+  </ion-list>
+
+  <ion-button expand="block" color="primary" (click)="fetchCaliforniaCities()">
+    Show All California Cities
+  </ion-button>
+
+  <ion-list *ngIf="californiaCities.length > 0">
+    <ion-item *ngFor="let city of californiaCities; let i = index">
+      <ion-label>
+        <h2>{{ i + 1 }}. {{ city }}</h2>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-button expand="block" color="primary" (click)="fetchAllCountries()">
+    Show All Countries
+  </ion-button>
+
+  <ion-list *ngIf="allCountries.length > 0">
+    <ion-item *ngFor="let country of allCountries; let i = index">
+      <ion-label>
+        <h2>{{ i + 1 }}. {{ country }}</h2>
+      </ion-label>
+    </ion-item>
+  </ion-list>
 </ion-content>
