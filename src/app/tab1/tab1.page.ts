@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { state } from '@angular/animations';
 
 @Component({
   selector: 'app-tab1',
@@ -9,15 +10,86 @@ import { HttpClient } from '@angular/common/http';
 export class Tab1Page {
   searchQuery: string = ''; // The input from the search bar
   breweries: any[] = []; // Array to hold the search results
+  allBreweries: any[] = []; // Stores all brewery data
 
   countries: string[] = []; // List of countries
   states: string[] = []; // List of states/provinces for the selected country
   cities: string[] = []; // List of cities
-  view: 'countries' | 'states' = 'countries'; // Tracks current view (countries or states)
-  viewcity: string = 'states'; // Current view ('states' or 'cities')
+  view: 'countries' | 'states' | 'cities' | 'breweries' | 'breweryDetails' = 'countries'; // Tracks current view (countries or states)
+  //viewcity: string = 'states'; // Current view ('states' or 'cities')
 
   constructor(private http: HttpClient) {
-    this.fetchAllCountries(); // Load countries on component initialization
+    this.fetchBreweries(); // Load countries on component initialization
+  }
+  isLoading = true; // Declare a loading state
+
+  // Fetch all breweries to extract countries and states
+  fetchBreweries() {
+    this.isLoading = true; // Declare a loading state
+
+    const cachedData = localStorage.getItem('breweries');
+    if (cachedData) {
+      this.allBreweries = JSON.parse(cachedData);
+      this.extractCountriesAndStates();
+      return;
+    }
+
+    const normalizeCountry = (country: string) => {
+      if (!country) return '';
+      return country.trim().toLowerCase().replace('the ', ''); // Normalize
+    };
+
+    const apiUrl = 'https://api.openbrewerydb.org/v1/breweries';
+    let currentPage = 1;
+    const breweriesPerPage = 100;
+    let isFetching = true;
+    this.allBreweries = [];
+    this.countries = [];
+    const countriesSet = new Set<string>(); // Track unique countries
+
+    const fetchPage = (page: number) => {
+      if (!isFetching) return; // Stop if no more data
+
+      this.http.get<any[]>(`${apiUrl}?page=${page}&per_page=${breweriesPerPage}`).subscribe(
+        (response) => {
+          if (response.length === 0) {
+            isFetching = false;
+            localStorage.setItem('breweries', JSON.stringify(this.allBreweries)); // Cache data
+            this.extractCountriesAndStates();
+            return;
+          }
+
+          // Append breweries
+          this.allBreweries = [...this.allBreweries, ...response];
+
+          // Extract unique countries dynamically
+          response.forEach((brewery) => {
+            if (brewery.country) {
+              countriesSet.add(normalizeCountry(brewery.country));
+            }
+          });
+
+          // Update UI progressively
+          this.countries = Array.from(countriesSet).sort();
+
+          // Fetch next page
+          fetchPage(page + 1);
+        },
+        (error) => {
+          console.error(`Error fetching breweries on page ${page}:`, error);
+          this.isLoading = false; // Hide loading on error
+        }
+      );
+    };
+
+    fetchPage(currentPage);
+  }
+
+
+  extractCountriesAndStates() {
+    this.countries = [
+      ...new Set(this.allBreweries.map((brewery) => brewery.country).filter(Boolean))
+    ].sort();
   }
 
   searchBreweries() {
@@ -55,6 +127,7 @@ export class Tab1Page {
 
 
   // Fetch a unique list of states/provinces for the selected country
+  /*
   fetchStates(country: string) {
     const apiUrl = `https://api.openbrewerydb.org/v1/breweries?by_country=${encodeURIComponent(country)}`;
     this.http.get<any[]>(apiUrl).subscribe(
@@ -66,22 +139,53 @@ export class Tab1Page {
         console.error(`Error fetching states for ${country}:`, error);
       }
     );
+  }*/
+  fetchStates(country: string) {
+    this.states = [
+      ...new Set(
+        this.allBreweries
+          .filter((brewery) => brewery.country === country)
+          .map((brewery) => brewery.state)
+          .filter(Boolean)
+      )
+    ].sort();
+    this.view = 'states'; // Switch to state view
   }
 
   // fetch all cities in a state
   fetchCities(state: string) {
-    const apiUrl = `https://api.openbrewerydb.org/v1/breweries?by_state=${encodeURIComponent(state)}`;
-    this.http.get<any[]>(apiUrl).subscribe(
-      (response) => {
-        // Extract unique cities from the response
-        this.cities = [...new Set(response.map(brewery => brewery.city).filter(Boolean))].sort();
-        this.viewcity = 'cities'; // Switch to cities view
-      },
-      (error) => {
-        console.error(`Error fetching cities for ${state}:`, error);
-      }
-    );
+    this.cities = [
+      ...new Set(
+        this.allBreweries
+          .filter((brewery) => brewery.state === state)
+          .map((brewery) => brewery.city)
+          .filter(Boolean)
+      )
+    ].sort();
+    this.view = 'cities'; // Switch to city view
   }
+
+  fetchBreweriesInCity(city: string) {
+    this.breweries = this.allBreweries
+      .filter((brewery) => brewery.city === city)
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    this.view = 'breweries';
+  }
+
+  // Store selected brewery details
+  breweryDetails: any = null;
+
+  viewBreweryDetails(brewery: any) {
+    this.breweryDetails = brewery;
+    this.view = 'breweryDetails';
+  }
+
+  backToBreweries() {
+    this.breweryDetails = null;
+    this.view = 'breweries';
+  }
+
 
   // Go back to the country list view
   backToCountries() {
@@ -89,6 +193,9 @@ export class Tab1Page {
   }
   backToStates() {
     this.view = 'states';
+  }
+  backToCities() {
+    this.view = 'cities';
   }
 
   californiaCities: string[] = []; // Array to hold the list of California cities

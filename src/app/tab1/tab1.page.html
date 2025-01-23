@@ -12,18 +12,13 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-list *ngIf="breweries.length > 0">
-    <ion-item *ngFor="let brewery of breweries">
-      <ion-label>
-        <!--styl výpisu v search baru-->
-        <h2>{{ brewery.name }}</h2>
-        <p>{{ brewery.brewery_type }} - {{ brewery.city }}, {{ brewery.state }}</p>
-      </ion-label>
-    </ion-item>
-  </ion-list>
+  <!-- Loading Indicator -->
+  <ion-text *ngIf="isLoading">
+    <p>Loading breweries... ({{ countries.length }}/13 countries loaded)</p>
+  </ion-text>
 
-  <ion-text *ngIf="breweries.length === 0 && searchQuery">
-    <p>No breweries found in this city. Try another one!</p>
+  <ion-text>
+    <h2>Countries in Database</h2>
   </ion-text>
 
   <!-- Country List -->
@@ -33,37 +28,54 @@
     </ion-item>
   </ion-list>
 
-  <!-- State/Province List -->
+  <!-- State List -->
   <ion-list *ngIf="view === 'states'">
     <ion-item *ngFor="let state of states">
-      <ion-button expand="block">{{ state }}</ion-button>
+      <ion-button expand="block" (click)="fetchCities(state)">{{ state }}</ion-button>
     </ion-item>
     <ion-item>
-      <ion-button color="medium" expand="block" (click)="backToCountries()">Back to Countries</ion-button>
+      <ion-button color="medium" expand="block" (click)="backToCountries()">⬅ Back to Countries</ion-button>
     </ion-item>
   </ion-list>
 
-  <ion-button expand="block" color="primary" (click)="fetchCaliforniaCities()">
-    Show All California Cities
-  </ion-button>
-
-  <ion-list *ngIf="californiaCities.length > 0">
-    <ion-item *ngFor="let city of californiaCities; let i = index">
-      <ion-label>
-        <h2>{{ i + 1 }}. {{ city }}</h2>
-      </ion-label>
+  <!-- City List -->
+  <ion-list *ngIf="view === 'cities'">
+    <ion-item *ngFor="let city of cities">
+      <ion-button expand="block" (click)="fetchBreweriesInCity(city)">{{ city }}</ion-button>
+    </ion-item>
+    <ion-item>
+      <ion-button color="medium" expand="block" (click)="backToStates()">⬅ Back to States</ion-button>
     </ion-item>
   </ion-list>
 
-  <ion-button expand="block" color="primary" (click)="fetchAllCountries()">
-    Show All Countries
-  </ion-button>
+  <!-- Brewery List -->
+  <ion-list *ngIf="view === 'breweries'">
+    <ion-item *ngFor="let brewery of breweries">
+      <ion-button expand="block" (click)="viewBreweryDetails(brewery)">{{ brewery.name }}</ion-button>
+    </ion-item>
+    <ion-item>
+      <ion-button color="medium" expand="block" (click)="backToCities()">⬅ Back to Cities</ion-button>
+    </ion-item>
+  </ion-list>
 
-  <ion-list *ngIf="allCountries.length > 0">
-    <ion-item *ngFor="let country of allCountries; let i = index">
+  <!-- Brewery Details -->
+  <ion-list *ngIf="view === 'breweryDetails'">
+    <ion-item>
       <ion-label>
-        <h2>{{ i + 1 }}. {{ country }}</h2>
+        <h2>{{ breweryDetails.name }}</h2>
+        <p>Type: {{ breweryDetails.brewery_type }}</p>
+        <p>City: {{ breweryDetails.city }}</p>
+        <p>State: {{ breweryDetails.state }}</p>
+        <p>Country: {{ breweryDetails.country }}</p>
+        <p *ngIf="breweryDetails.phone">📞 Phone: {{ breweryDetails.phone }}</p>
+        <p *ngIf="breweryDetails.website_url">
+          🌍 Website:
+          <a [href]="breweryDetails.website_url" target="_blank">{{ breweryDetails.website_url }}</a>
+        </p>
       </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-button color="medium" expand="block" (click)="backToBreweries()">⬅ Back to Breweries</ion-button>
     </ion-item>
   </ion-list>
 </ion-content>
