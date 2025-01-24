@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { state } from '@angular/animations';
 
+import { Router } from '@angular/router'; // ✅ Needed for navigation
+
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
@@ -19,7 +21,7 @@ export class Tab1Page {
   //viewcity: string = 'states'; // Current view ('states' or 'cities')
   favorites: any[] = []; // Store favorite breweries
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
     this.loadFavorites();
     this.fetchBreweries(); // Load countries on component initialization
   }
@@ -234,6 +236,11 @@ export class Tab1Page {
     }
   }
 
+  // ✅ Send the brewery's location to Tab 2 and open the map
+  showOnMap(brewery: any) {
+    localStorage.setItem('selectedBrewery', JSON.stringify(brewery));
+    this.router.navigate(['/tabs/tab2']); // ✅ Navigate to Tab 2
+  }
 
   /*
     californiaCities: string[] = []; // Array to hold the list of California cities

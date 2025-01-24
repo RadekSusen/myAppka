@@ -75,7 +75,14 @@
   <ion-list *ngIf="view === 'breweryDetails'">
     <ion-item>
       <ion-label>
-        <h2>{{ breweryDetails.name }}</h2>
+        <h2 style="display: flex; align-items: center; justify-content: space-between;">
+          {{ breweryDetails.name }}
+          <ion-button fill="clear" (click)="toggleFavorite(breweryDetails)">
+            <ion-icon name="star" *ngIf="isFavorite(breweryDetails)"></ion-icon>
+            <ion-icon name="star-outline" *ngIf="!isFavorite(breweryDetails)"></ion-icon>
+          </ion-button>
+        </h2>
+
         <p>Type: {{ breweryDetails.brewery_type }}</p>
         <p>City: {{ breweryDetails.city }}</p>
         <p>State: {{ breweryDetails.state }}</p>
@@ -86,11 +93,15 @@
           <a [href]="breweryDetails.website_url" target="_blank">{{ breweryDetails.website_url }}</a>
         </p>
       </ion-label>
-      <ion-button (click)="toggleFavorite(breweryDetails)">
-        <ion-icon name="star" *ngIf="isFavorite(breweryDetails)"></ion-icon>
-        <ion-icon name="star-outline" *ngIf="!isFavorite(breweryDetails)"></ion-icon>
+    </ion-item>
+
+    <!-- "Show on Map" Button Below -->
+    <ion-item>
+      <ion-button expand="block" color="primary" (click)="showOnMap(breweryDetails)">
+        Show on Map
       </ion-button>
     </ion-item>
+
     <ion-item>
       <ion-button color="medium" expand="block" (click)="backToBreweries()">⬅ Back to Breweries</ion-button>
     </ion-item>
