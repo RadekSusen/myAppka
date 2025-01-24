@@ -11,14 +11,27 @@ import { IonRouterOutlet } from '@ionic/angular'; // Detects when tab is active
 export class Tab3Page {
   favorites: any[] = [];
   breweryDetails: any = null; // Store selected brewery details
-  view: 'favorites' | 'breweryDetails' = 'favorites'; // Tracks view state
+  view: 'favorites' | 'breweryDetails' | 'addBrewery' = 'favorites'; // Tracks view state
+
+  // Store new brewery details
+  newBrewery = {
+    name: '',
+    brewery_type: '',
+    city: '',
+    state: '',
+    country: '',
+    phone: '',
+    website_url: ''
+  };
 
   constructor(private router: Router, private outlet: IonRouterOutlet) { }
 
+  // Refresh on opening tab3
   ionViewWillEnter() {
     this.loadFavorites();
   }
 
+  // Loading favorite breweries from storage
   loadFavorites() {
     const storedFavorites = localStorage.getItem('favorites');
     if (storedFavorites) {
@@ -49,5 +62,27 @@ export class Tab3Page {
   backToFavorites() {
     this.view = 'favorites';
     this.breweryDetails = null;
+  }
+
+  // Open the Add Brewery Form
+  openAddBreweryForm() {
+    this.view = 'addBrewery';
+  }
+
+  // Add the custom brewery to local storage
+  addCustomBrewery() {
+    if (!this.newBrewery.name || !this.newBrewery.brewery_type || !this.newBrewery.city || !this.newBrewery.state || !this.newBrewery.country) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    this.favorites.push({ ...this.newBrewery }); // Add new brewery to favorites
+    localStorage.setItem('favorites', JSON.stringify(this.favorites));
+
+    // Reset form
+    this.newBrewery = { name: '', brewery_type: '', city: '', state: '', country: '', phone: '', website_url: '' };
+
+    // Go back to favorites list
+    this.view = 'favorites';
   }
 }

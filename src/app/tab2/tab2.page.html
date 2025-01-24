@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-searchbar placeholder="Search cities"></ion-searchbar>
+    <ion-searchbar placeholder="Search cities" [(ngModel)]="searchQuery" (ionInput)="searchBreweries()"></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 

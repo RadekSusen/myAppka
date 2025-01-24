@@ -38,7 +38,7 @@
       </ion-label>
     </ion-item>
 
-    <!-- ✅ "Show on Map" Button -->
+    <!-- "Show on Map" Button -->
     <ion-item>
       <ion-button expand="block" color="primary" (click)="showOnMap(breweryDetails)">
         Show on Map
@@ -49,4 +49,45 @@
       <ion-button color="medium" expand="block" (click)="backToFavorites()">⬅ Back to Favorites</ion-button>
     </ion-item>
   </ion-list>
+
+  <!-- Brewery Add Form -->
+  <ion-list *ngIf="view === 'addBrewery'">
+    <ion-item>
+      <ion-input placeholder="Brewery Name" [(ngModel)]="newBrewery.name"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input placeholder="Type (e.g., micro, regional, brewpub)" [(ngModel)]="newBrewery.brewery_type"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input placeholder="City" [(ngModel)]="newBrewery.city"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input placeholder="State" [(ngModel)]="newBrewery.state"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input placeholder="Country" [(ngModel)]="newBrewery.country"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input placeholder="Phone (optional)" [(ngModel)]="newBrewery.phone"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input placeholder="Website URL (optional)" [(ngModel)]="newBrewery.website_url"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-button expand="block" color="success" (click)="addCustomBrewery()">Add Brewery</ion-button>
+    </ion-item>
+
+    <ion-item>
+      <ion-button color="medium" expand="block" (click)="backToFavorites()">⬅ Back to Favorites</ion-button>
+    </ion-item>
+  </ion-list>
+
+  <!-- Floating Add Brewery Button -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="primary" (click)="openAddBreweryForm()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
 </ion-content>

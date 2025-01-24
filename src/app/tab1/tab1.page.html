@@ -1,14 +1,14 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-searchbar placeholder="Search cities" [(ngModel)]="searchQuery" (ionInput)="searchBreweries()"></ion-searchbar>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
+  <ion-header [translucent]="true">
     <ion-toolbar>
       <ion-searchbar placeholder="Search cities" [(ngModel)]="searchQuery"
         (ionInput)="searchBreweries()"></ion-searchbar>
+
+      <ion-buttons slot="end">
+        <ion-button color="medium" (click)="backToCountries()">
+          <ion-icon name="home-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
     </ion-toolbar>
   </ion-header>
 
@@ -101,7 +101,7 @@
         Show on Map
       </ion-button>
     </ion-item>
-
+    <!-- Back button -->
     <ion-item>
       <ion-button color="medium" expand="block" (click)="backToBreweries()">⬅ Back to Breweries</ion-button>
     </ion-item>
