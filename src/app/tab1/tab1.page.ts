@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { state } from '@angular/animations';
 
-import { Router } from '@angular/router'; // ✅ Needed for navigation
+import { Router } from '@angular/router'; // Needed for navigation
 
 @Component({
   selector: 'app-tab1',
@@ -107,17 +107,29 @@ export class Tab1Page {
       return;
     }
 
-    const apiUrl = `https://api.openbrewerydb.org/v1/breweries?by_city=${this.searchQuery}&per_page=10`;
-
-    this.http.get<any[]>(apiUrl).subscribe(
-      (response) => {
-        this.breweries = response; // Update breweries array with API response
-      },
-      (error) => {
-        console.error('Error fetching data:', error);
-        this.breweries = []; // Clear results in case of an error
-      }
+    // Search across all breweries, not just the filtered ones
+    this.breweries = this.allBreweries.filter((brewery) =>
+      brewery.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      brewery.city.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      brewery.state.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      brewery.country.toLowerCase().includes(this.searchQuery.toLowerCase())
     );
+
+    this.view = 'breweries'; // Ensure the results are displayed
+
+    /*
+        const apiUrl = `https://api.openbrewerydb.org/v1/breweries?by_city=${this.searchQuery}&per_page=10`;
+    
+        this.http.get<any[]>(apiUrl).subscribe(
+          (response) => {
+            this.breweries = response; // Update breweries array with API response
+          },
+          (error) => {
+            console.error('Error fetching data:', error);
+            this.breweries = []; // Clear results in case of an error
+          }
+        );
+    */
   }
 
 
@@ -236,10 +248,10 @@ export class Tab1Page {
     }
   }
 
-  // ✅ Send the brewery's location to Tab 2 and open the map
+  // Send the brewery's location to Tab 2 and open the map
   showOnMap(brewery: any) {
     localStorage.setItem('selectedBrewery', JSON.stringify(brewery));
-    this.router.navigate(['/tabs/tab2']); // ✅ Navigate to Tab 2
+    this.router.navigate(['/tabs/tab2']); // Navigate to Tab 2
   }
 
   /*

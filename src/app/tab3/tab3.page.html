@@ -10,13 +10,43 @@
     <p style="text-align: center; padding: 20px;">No favorite breweries yet.</p>
   </ion-text>
 
-  <ion-list>
+  <!-- Show favorite breweries list if in 'favorites' view -->
+  <ion-list *ngIf="view === 'favorites'">
     <ion-item *ngFor="let brewery of favorites" (click)="viewBreweryDetails(brewery)">
       <ion-label>
         <h2>{{ brewery.name }}</h2>
         <p><strong>{{ brewery.brewery_type }}</strong> → {{ brewery.city }}, {{ brewery.country }}</p>
       </ion-label>
-      <ion-button color="danger" (click)="removeFavorite(brewery)">Remove</ion-button>
+      <ion-button color="danger" (click)="removeFavorite(brewery, $event)">Remove</ion-button>
+    </ion-item>
+  </ion-list>
+
+  <!-- Brewery Details (Show only when in 'breweryDetails' view) -->
+  <ion-list *ngIf="view === 'breweryDetails'">
+    <ion-item>
+      <ion-label>
+        <h2>{{ breweryDetails.name }}</h2>
+        <p>Type: {{ breweryDetails.brewery_type }}</p>
+        <p>City: {{ breweryDetails.city }}</p>
+        <p>State: {{ breweryDetails.state }}</p>
+        <p>Country: {{ breweryDetails.country }}</p>
+        <p *ngIf="breweryDetails.phone">📞 Phone: {{ breweryDetails.phone }}</p>
+        <p *ngIf="breweryDetails.website_url">
+          🌍 Website:
+          <a [href]="breweryDetails.website_url" target="_blank">{{ breweryDetails.website_url }}</a>
+        </p>
+      </ion-label>
+    </ion-item>
+
+    <!-- ✅ "Show on Map" Button -->
+    <ion-item>
+      <ion-button expand="block" color="primary" (click)="showOnMap(breweryDetails)">
+        Show on Map
+      </ion-button>
+    </ion-item>
+
+    <ion-item>
+      <ion-button color="medium" expand="block" (click)="backToFavorites()">⬅ Back to Favorites</ion-button>
     </ion-item>
   </ion-list>
 </ion-content>
