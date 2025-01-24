@@ -20,9 +20,14 @@ export class Tab1Page {
   favorites: any[] = []; // Store favorite breweries
 
   constructor(private http: HttpClient) {
+    this.loadFavorites();
     this.fetchBreweries(); // Load countries on component initialization
   }
   isLoading = true; // Declare a loading state
+
+  normalizeCountry(country: string): string {
+    return country ? country.trim().toLowerCase().replace('the ', '') : '';
+  }
 
   // Fetch all breweries to extract countries and states
   fetchBreweries() {
@@ -32,6 +37,7 @@ export class Tab1Page {
     if (cachedData) {
       this.allBreweries = JSON.parse(cachedData);
       this.extractCountriesAndStates();
+      this.isLoading = false;
       return;
     }
 
@@ -228,83 +234,85 @@ export class Tab1Page {
     }
   }
 
-  californiaCities: string[] = []; // Array to hold the list of California cities
 
-  fetchCaliforniaCities() {
-    const baseUrl = `https://api.openbrewerydb.org/v1/breweries`;
-    let page = 1; // Start with the first page
-    const perPage = 50; // Fetch up to 50 results per page
-    const allCities = new Set<string>(); // Use a Set to store unique cities
-
-    const fetchPage = () => {
-      const apiUrl = `${baseUrl}?by_state=California&per_page=${perPage}&page=${page}`;
-      this.http.get<any[]>(apiUrl).subscribe(
-        (response) => {
-          if (response.length === 0) {
-            // No more results, stop pagination
-            this.californiaCities = Array.from(allCities).sort(); // Convert Set to sorted array
-            return;
-          }
-
-          // Add cities from the current page
-          response.forEach(brewery => {
-            if (brewery.city) {
-              allCities.add(brewery.city);
+  /*
+    californiaCities: string[] = []; // Array to hold the list of California cities
+  
+    fetchCaliforniaCities() {
+      const baseUrl = `https://api.openbrewerydb.org/v1/breweries`;
+      let page = 1; // Start with the first page
+      const perPage = 50; // Fetch up to 50 results per page
+      const allCities = new Set<string>(); // Use a Set to store unique cities
+  
+      const fetchPage = () => {
+        const apiUrl = `${baseUrl}?by_state=California&per_page=${perPage}&page=${page}`;
+        this.http.get<any[]>(apiUrl).subscribe(
+          (response) => {
+            if (response.length === 0) {
+              // No more results, stop pagination
+              this.californiaCities = Array.from(allCities).sort(); // Convert Set to sorted array
+              return;
             }
-          });
-
-          // Fetch the next page
-          page++;
-          fetchPage();
-        },
-        (error) => {
-          console.error(`Error fetching page ${page}:`, error);
-        }
-      );
-    };
-
-    // Start fetching the first page
-    fetchPage();
-  }
-
-  allCountries: string[] = []; // Array to store all unique countries
-
-  fetchAllCountries() {
-    const baseUrl = `https://api.openbrewerydb.org/v1/breweries`;
-    let page = 1; // Start with the first page
-    const perPage = 50; // Number of results per page
-    const countriesSet = new Set<string>(); // Use a Set to ensure unique countries
-
-    const fetchPage = () => {
-      const apiUrl = `${baseUrl}?per_page=${perPage}&page=${page}`;
-      this.http.get<any[]>(apiUrl).subscribe(
-        (response) => {
-          if (response.length === 0) {
-            // No more results, finalize the list
-            this.allCountries = Array.from(countriesSet).sort(); // Convert Set to sorted array
-            return;
+  
+            // Add cities from the current page
+            response.forEach(brewery => {
+              if (brewery.city) {
+                allCities.add(brewery.city);
+              }
+            });
+  
+            // Fetch the next page
+            page++;
+            fetchPage();
+          },
+          (error) => {
+            console.error(`Error fetching page ${page}:`, error);
           }
-
-          // Add countries from the current page
-          response.forEach(brewery => {
-            if (brewery.country) {
-              countriesSet.add(brewery.country);
+        );
+      };
+  
+      // Start fetching the first page
+      fetchPage();
+    }
+  
+    allCountries: string[] = []; // Array to store all unique countries
+  
+    fetchAllCountries() {
+      const baseUrl = `https://api.openbrewerydb.org/v1/breweries`;
+      let page = 1; // Start with the first page
+      const perPage = 50; // Number of results per page
+      const countriesSet = new Set<string>(); // Use a Set to ensure unique countries
+  
+      const fetchPage = () => {
+        const apiUrl = `${baseUrl}?per_page=${perPage}&page=${page}`;
+        this.http.get<any[]>(apiUrl).subscribe(
+          (response) => {
+            if (response.length === 0) {
+              // No more results, finalize the list
+              this.allCountries = Array.from(countriesSet).sort(); // Convert Set to sorted array
+              return;
             }
-          });
-
-          // Fetch the next page
-          page++;
-          fetchPage();
-        },
-        (error) => {
-          console.error(`Error fetching page ${page}:`, error);
-        }
-      );
-    };
-
-    // Start fetching from the first page
-    fetchPage();
-  }
-
-
+  
+            // Add countries from the current page
+            response.forEach(brewery => {
+              if (brewery.country) {
+                countriesSet.add(brewery.country);
+              }
+            });
+  
+            // Fetch the next page
+            page++;
+            fetchPage();
+          },
+          (error) => {
+            console.error(`Error fetching page ${page}:`, error);
+          }
+        );
+      };
+  
+      // Start fetching from the first page
+      fetchPage();
+    }
+  
+  */
 }

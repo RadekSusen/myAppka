@@ -1,14 +1,19 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Favorites breweries</ion-title>
+    <ion-title>Favorite Breweries</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <!-- Show a message when no favorites exist -->
+  <ion-text *ngIf="favorites.length === 0">
+    <p style="text-align: center; padding: 20px;">No favorite breweries yet.</p>
+  </ion-text>
+
   <ion-list>
-    <ion-item *ngFor="let brewery of favorites">
+    <ion-item *ngFor="let brewery of favorites" (click)="viewBreweryDetails(brewery)">
       <ion-label>
-        <h3>{{ brewery.name }}</h3>
+        <h2>{{ brewery.name }}</h2>
         <p><strong>{{ brewery.brewery_type }}</strong> → {{ brewery.city }}, {{ brewery.country }}</p>
       </ion-label>
       <ion-button color="danger" (click)="removeFavorite(brewery)">Remove</ion-button>
