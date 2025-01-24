@@ -48,11 +48,24 @@
     </ion-item>
   </ion-list>
 
-  <!-- Brewery List -->
+  <!-- Brewery List (Formatted with name, type, city, country...)-->
   <ion-list *ngIf="view === 'breweries'">
-    <ion-item *ngFor="let brewery of breweries">
-      <ion-button expand="block" (click)="viewBreweryDetails(brewery)">{{ brewery.name }}</ion-button>
-    </ion-item>
+    <ion-item-sliding *ngFor="let brewery of breweries">
+      <ion-item>
+        <ion-label>
+          <h3>{{ brewery.name }}</h3>
+          <p><strong>{{ brewery.brewery_type }}</strong> → {{ brewery.city }}, {{ brewery.country }}</p>
+        </ion-label>
+        <ion-button color="primary" (click)="viewBreweryDetails(brewery)">More Info</ion-button>
+      </ion-item>
+      <ion-item-options side="start">
+        <ion-item-option color="success" (click)="toggleFavorite(brewery)">
+          <ion-icon name="star" *ngIf="isFavorite(brewery)"></ion-icon>
+          <ion-icon name="star-outline" *ngIf="!isFavorite(brewery)"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+
     <ion-item>
       <ion-button color="medium" expand="block" (click)="backToCities()">⬅ Back to Cities</ion-button>
     </ion-item>
@@ -73,6 +86,10 @@
           <a [href]="breweryDetails.website_url" target="_blank">{{ breweryDetails.website_url }}</a>
         </p>
       </ion-label>
+      <ion-button (click)="toggleFavorite(breweryDetails)">
+        <ion-icon name="star" *ngIf="isFavorite(breweryDetails)"></ion-icon>
+        <ion-icon name="star-outline" *ngIf="!isFavorite(breweryDetails)"></ion-icon>
+      </ion-button>
     </ion-item>
     <ion-item>
       <ion-button color="medium" expand="block" (click)="backToBreweries()">⬅ Back to Breweries</ion-button>

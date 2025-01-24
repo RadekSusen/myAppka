@@ -17,6 +17,7 @@ export class Tab1Page {
   cities: string[] = []; // List of cities
   view: 'countries' | 'states' | 'cities' | 'breweries' | 'breweryDetails' = 'countries'; // Tracks current view (countries or states)
   //viewcity: string = 'states'; // Current view ('states' or 'cities')
+  favorites: any[] = []; // Store favorite breweries
 
   constructor(private http: HttpClient) {
     this.fetchBreweries(); // Load countries on component initialization
@@ -196,6 +197,35 @@ export class Tab1Page {
   }
   backToCities() {
     this.view = 'cities';
+  }
+
+  // Add or remove a brewery from favorites
+  toggleFavorite(brewery: any) {
+    const index = this.favorites.findIndex((fav) => fav.id === brewery.id);
+    if (index === -1) {
+      this.favorites.push(brewery);
+    } else {
+      this.favorites.splice(index, 1);
+    }
+    this.saveFavorites(); // Save changes to storage
+  }
+
+  // Check if a brewery is in favorites
+  isFavorite(brewery: any): boolean {
+    return this.favorites.some((fav) => fav.id === brewery.id);
+  }
+
+  // Save favorites to localStorage
+  saveFavorites() {
+    localStorage.setItem('favorites', JSON.stringify(this.favorites));
+  }
+
+  // Load favorites from localStorage
+  loadFavorites() {
+    const storedFavorites = localStorage.getItem('favorites');
+    if (storedFavorites) {
+      this.favorites = JSON.parse(storedFavorites);
+    }
   }
 
   californiaCities: string[] = []; // Array to hold the list of California cities
